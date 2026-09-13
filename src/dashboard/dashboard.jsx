@@ -5,20 +5,43 @@ import {Calendar} from "./calendar/calendar";
 import {CreateEvent} from "./event/createEvent"
 import TimeUtils from './calendar/TimeUtils'
 import {CalendarSelector} from "./calendar/calendarSelector";
+import {CalendarNotifier} from "./CalendarClient.js";
 
 export function Dashboard() {
-    const [activeWeek, updateActiveWeek] = React.useState(TimeUtils.getTimezonedCurrentWeek())
+    const [activeWeek, updateActiveWeek] = React.useState(TimeUtils.getTimezonedCurrentWeek());
+    //todo cache this, then pull from cache
     const [activeCalendars, setActiveCalendars] = React.useState(new Map());
     const [userCalendars, setUserCalendars] = React.useState([]);
 
     React.useEffect(() => {
-        fetch('/api/users/calendars')
+        updateCalendars()
+        CalendarNotifier.addHandler(handleEvent);
+        return () => {
+            CalendarNotifier.removeHandler(handleEvent);
+        }
+    }, []);
+
+    function handleEvent(event) {
+        //todo make this update only relevant users
+        console.log(`Received event ${event.type} from ${event.from}`)
+        if (event.type === "update-users") {
+            console.log("Updating calendars...")
+            updateCalendars();
+        }
+    }
+
+    function updateCalendars() {
+        fetch('/api/users/calendars', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }})
             .then((response) => response.json())
             .then((calendars) => {
                 setActiveCalendars(new Map(calendars.map(calendar => [calendar._id, false])));
                 setUserCalendars(calendars);
-            })
-    }, [])
+            });
+    }
 
     function getActiveCalendars() {
         const active = []
@@ -49,10 +72,7 @@ export function Dashboard() {
             <Container>
                 <Row>
                     <Col><CalendarSelector activeCalendars={activeCalendars} userCalendars={userCalendars}
-                                           setCalendars={(activeCalendars, userCalendars) => {
-                                               setActiveCalendars(activeCalendars);
-                                               setUserCalendars(userCalendars)
-                                           }}/></Col>
+                                           setActiveCalendars={setActiveCalendars} setCalendars={setUserCalendars}/></Col>
                     <Col>{getCalendarPaginator()}</Col>
                     <Col><CreateEvent calendars={userCalendars} setCalendars={setUserCalendars}/></Col>
                 </Row>

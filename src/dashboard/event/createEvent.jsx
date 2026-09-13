@@ -8,6 +8,7 @@ import TimeUtils from "../calendar/TimeUtils";
 import CalendarSelectorUtils from "../calendar/CalendarSelectorUtils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"
+import {CalendarNotifier} from "../CalendarClient.js";
 
 export function CreateEvent({name, description, time, calendars, setCalendars}) {
     const [eventName, setEventName] = React.useState((name != null) ? name : "");
@@ -54,6 +55,9 @@ export function CreateEvent({name, description, time, calendars, setCalendars}) 
         }
 
         setCalendars(await (await fetch("/api/users/calendars")).json())
+
+        //todo send to relevant users
+        CalendarNotifier.broadcastEvent("calendar", "update-users", {users: []})
     }
 
     return (
@@ -61,6 +65,7 @@ export function CreateEvent({name, description, time, calendars, setCalendars}) 
             trigger={
                 <Button>Create Event</Button>
             }
+            nested
             modal
         >
             {close => (
@@ -80,7 +85,7 @@ export function CreateEvent({name, description, time, calendars, setCalendars}) 
                     </FormGroup>
                     <FormGroup>
                         <FormLabel>Calendars:</FormLabel>
-                        {CalendarSelectorUtils.getCalendarBoxes(eventCalendars, calendars, setEventCalendars, setIsCalendarSelected)}
+                        {CalendarSelectorUtils.getCalendarBoxes(eventCalendars, calendars, setEventCalendars, setCalendars, setIsCalendarSelected)}
                     </FormGroup>
                     <FormGroup>
                         <Button variant="primary" onClick={() => {

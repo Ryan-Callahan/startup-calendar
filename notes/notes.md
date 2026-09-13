@@ -19,7 +19,7 @@ This is essentially being used as scratch paper.
 
 # AWS Server Instance
 IP address: 3.85.182.55
-Current domain: http://schedulizer260.com/
+Current domain: http://ryan-callahan.com/
 
 ### SSH
 in command line:

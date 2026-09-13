@@ -8,7 +8,7 @@ export function Error({errorMessage}) {
                 <h2>{errorMessage}</h2>
                 <div className="box">
                     <h2>MY BALLS ITCH</h2>
-                    <img alt="hank schrader" src="../../public/hanktoilet1.jpg" width="69%"/>
+                    <img alt="hank schrader" src="/hanktoilet1.jpg" width="69%"/>
                     <h2>BOTTOM TEXT</h2>
                 </div>
             </div>

@@ -1,4 +1,3 @@
-## Startup 260
 ### CS 260 - Ryan Callahan
 
 # ***Schedulizer***

@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import {Form, FormControl, FormLabel} from "react-bootstrap";
 import CalendarSelectorUtils from "./CalendarSelectorUtils"
 
-export function CalendarSelector({activeCalendars, userCalendars, setCalendars}) {
+export function CalendarSelector({activeCalendars, userCalendars, setActiveCalendars, setCalendars}) {
     const [newCalendar, setNewCalendar] = React.useState('');
 
     async function createCalendar() {
@@ -19,10 +19,11 @@ export function CalendarSelector({activeCalendars, userCalendars, setCalendars})
         const calendar = await response.json()
         const active = activeCalendars
         const user = userCalendars
-        active.set(calendar._id, false)
-        user.push(calendar)
-        setCalendars(active, user)
-        setNewCalendar('')
+        active.set(calendar._id, false);
+        user.push(calendar);
+        setActiveCalendars(active);
+        setCalendars(user);
+        setNewCalendar('');
     }
 
     return (
@@ -31,12 +32,12 @@ export function CalendarSelector({activeCalendars, userCalendars, setCalendars})
                 <Button>Calendars</Button>
             }
             position="bottom left"
-            contentStyle={{width: "130px"}}
+            contentStyle={{width: "200px"}}
             nested
         >
             <Form>
                 <span>Your Calendars:</span>
-                {CalendarSelectorUtils.getCalendarBoxes(activeCalendars, userCalendars, setCalendars, (_) => null)}
+                {CalendarSelectorUtils.getCalendarBoxes(activeCalendars, userCalendars, setActiveCalendars, setCalendars, (_) => null)}
                 <Popup trigger={<Button>Create New Calendar</Button>}>
                     {closeNewCalendar => (
                         <Form>

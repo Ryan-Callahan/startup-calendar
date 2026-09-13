@@ -28,7 +28,7 @@ export function About() {
                         </p>
                     </div>
                     <div className="col-lg-8">
-                        <img alt="schedulizer-demo" src="../../public/schedulizer_mockup.png" width="100%"/>
+                        <img alt="schedulizer-demo" src="/schedulizer_mockup.png" width="100%"/>
                     </div>
                 </div>
             </div>

@@ -5,6 +5,7 @@ import Popup from "reactjs-popup";
 import {Card, Container, Row} from "react-bootstrap";
 import TimeUtils from "../calendar/TimeUtils";
 import Button from "react-bootstrap/Button";
+import {CalendarNotifier} from "../CalendarClient.js";
 
 export function Event({time, date, event, setCalendars}) {
 
@@ -13,6 +14,9 @@ export function Event({time, date, event, setCalendars}) {
             method: "DELETE"
         });
         setCalendars(await (await fetch("/api/users/calendars")).json());
+
+        //todo send to relevant users
+        CalendarNotifier.broadcastEvent("calendar", "update-users", {users: []});
     }
 
     function getEventCard() {

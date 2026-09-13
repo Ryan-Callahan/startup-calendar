@@ -1,5 +1,6 @@
 import {Form} from "react-bootstrap";
 import React from "react";
+import {CalendarInfo} from "./calendarInfo";
 
 class CalendarSelectorUtils {
     static isCalendarSelected(calendars) {
@@ -11,7 +12,7 @@ class CalendarSelectorUtils {
         return false
     }
 
-    static getCalendarBoxes(activeCalendars, userCalendars, setCalendars, setCalendarIsSelected) {
+    static getCalendarBoxes(activeCalendars, userCalendars, setActiveCalendars, setCalendars, setCalendarIsSelected) {
 
         function toggleActiveCalendar(calendar) {
             const updatedCalendars = new Map(activeCalendars)
@@ -21,19 +22,13 @@ class CalendarSelectorUtils {
                 updatedCalendars.set(calendar, true)
             }
             setCalendarIsSelected(CalendarSelectorUtils.isCalendarSelected(updatedCalendars))
-            setCalendars(updatedCalendars, userCalendars)
+            setActiveCalendars(updatedCalendars, userCalendars)
         }
 
         const e = []
         for (const calendar of userCalendars) {
             e.push(
-                <Form.Check
-                    key={"checkbox-" + calendar._id}
-                    type="switch"
-                    label={calendar.name}
-                    checked={activeCalendars.get(calendar._id)}
-                    onChange={() => toggleActiveCalendar(calendar._id)}
-                />
+                <CalendarInfo key={calendar._id} calendar={calendar} toggleActiveCalendar={toggleActiveCalendar} activeCalendars={activeCalendars} setCalendars={setCalendars}/>
             )
         }
         return (

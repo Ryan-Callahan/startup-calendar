@@ -1,6 +1,8 @@
 {
   "name": "startup",
   "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "description": "Are you finding it hard to keep track of all the busy schedules and deadlines in your life? Then you need\r to try out Schedulizer. Schedulizer is a simple planner application designed with deadlines, projects, and\r meetings in mind. With Schedulizer, you can effectively plan out what projects you have, when they are due,\r and when you will work on them, allowing you to work in harmony with all the other events that happen in life. \r Working on a team? Schedulizer has you covered, with shared planners and features to help you coordinate \r with co-workers, teammates, friends, etc.!",
   "main": "index.js",
   "scripts": {

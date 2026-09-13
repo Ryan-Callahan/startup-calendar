@@ -121,6 +121,10 @@ async function deleteEvent(eventId) {
     }
 }
 
+function objectId(objectId) {
+    return new ObjectId(objectId);
+}
+
 module.exports = {
     addUser,
     getUser,
@@ -137,5 +141,6 @@ module.exports = {
     addEvent,
     getEvent,
     updateEvent,
-    deleteEvent
+    deleteEvent,
+    objectId
 }

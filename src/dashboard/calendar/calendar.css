@@ -9,6 +9,19 @@
     overflow-y: auto;
 }
 
+.calendar-info-button {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background-color: rgba(4, 13, 23, 0);
+}
+
+.calendar-info-button .image {
+    width: auto;
+    transform: translateX(-20%) translateY(-3%);
+}
+
+
 .day {
     min-width: 100px;
 }

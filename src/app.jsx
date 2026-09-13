@@ -10,21 +10,26 @@ import {Nav, NavItem} from "react-bootstrap";
 import {AuthState} from "./login/authState";
 import {Profile} from "./profile/profile";
 import {MonsterFact} from "./monster-fact/monsterFact";
+import {Error} from "./error/error";
 
 export default function App() {
-    const [user, setUser] = React.useState();
-    const currentAuthState = user ? AuthState.Authenticated : AuthState.Unauthenticated;
+    const [username, setUsername] = React.useState();
+    const currentAuthState = username ? AuthState.Authenticated : AuthState.Unauthenticated;
     const [authState, setAuthState] = React.useState(currentAuthState);
 
     React.useEffect(() => {
-        fetch('/api/auth/username')
-            .then(response => response.json())
+        fetch('/api/auth/username', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }})
+            .then((response) => response.json())
             .then(body => {
                 if (body) {
-                    setUser(body.username)
+                    setUsername(body.username)
                     setAuthState(AuthState.Authenticated)
                 } else {
-                    setUser('')
+                    setUsername('')
                     setAuthState(AuthState.Unauthenticated)
                 }
             });
@@ -42,25 +47,25 @@ export default function App() {
                             </NavItem>
                             {authState === AuthState.Authenticated && (
                                 <NavItem className="nav-item">
-                                    <NavLink className="nav-link link-light" eventKey="link-1" to="dashboard">Home</NavLink>
+                                    <NavLink className="nav-link link-light" to="dashboard">Home</NavLink>
                                 </NavItem>
                             )}
                             <NavItem className="nav-item">
                                 <NavLink className="nav-link link-light" to="about">About</NavLink>
                             </NavItem>
                         </Nav>
-                        <Profile username={user}/>
+                        <Profile username={username}/>
                     </nav>
                 </header>
 
                 <Routes>
                     <Route path='/' element={
                         <Login
-                            user={user}
+                            user={username}
                             authState={authState}
                             onAuthChange={(user, authState) => {
                                 setAuthState(authState);
-                                setUser(user);
+                                setUsername(user);
                             }}
                         />
                     } exact/>
@@ -75,7 +80,7 @@ export default function App() {
                     <small>Ryan Callahan 2025</small>
                     <div>
                         <a href="https://github.com/Ryan-Callahan/startup/tree/main">Github</a>
-                        <a href="https://schedulizer260.com">Other Sites</a>
+                        <a href="https://ryan-callahan.com">Other Sites</a>
                     </div>
                 </footer>
             </div>
@@ -84,5 +89,5 @@ export default function App() {
 }
 
 function NotFound() {
-    return <main className="container-fluid bg-secondary text-center">404: Return to sender. Address unknown.</main>;
+    return <main className="container-fluid bg-secondary text-center"><div>404: Return to sender. Address unknown.</div><Error/></main>;
 }

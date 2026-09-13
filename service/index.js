@@ -3,7 +3,8 @@ const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const uuid = require('uuid');
 const app = express();
-const DB = require('./database')
+const DB = require('./database.js');
+const { peerProxy } = require('./peerProxy.js');
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static('public'));
@@ -12,7 +13,8 @@ const salt = bcrypt.genSaltSync(10);
 const authCookieName = 'token';
 
 //Used with .filter() on FlatArrays
-let UNIQUE = (value, index, self) => self.indexOf(value) === index
+const UNIQUE_VALUES = (value, index, self) => self.indexOf(value) === index
+const UNIQUE_OBJECTS = (value, index, self) => self.findIndex(obj => obj.toString() === value.toString()) === index;
 
 let apiRouter = express.Router();
 app.use(`/api`, apiRouter);
@@ -71,10 +73,11 @@ const verifyAuth = async (req, res, next) => {
     }
 };
 
-apiRouter.post('/users/calendars', verifyAuth, async (req, res) => {
-    let user = await findUser('token', req.cookies[authCookieName])
-    user = await addCalendarToUser(user, req.body);
-    res.send({username: user.username, calendars: user.calendars})
+apiRouter.post('/user/calendars', verifyAuth, async (req, res) => {
+    const user = await findUser('username', req.body.username);
+    const calendarId = req.body.calendar_id;
+    await addCalendarToUser(user, DB.objectId(calendarId));
+    res.status(200).send({username: user.username, calendars: user.calendars})
 });
 
 apiRouter.get('/users/calendars', verifyAuth, async (req, res) => {
@@ -165,7 +168,7 @@ async function findUser(field, value) {
 async function addCalendarToUser(user, calendars) {
     const userCalendars = user.calendars;
     userCalendars.push(calendars)
-    user.calendars = userCalendars.flat().filter(UNIQUE);
+    user.calendars = userCalendars.flat().filter(UNIQUE_OBJECTS);
     await DB.updateUser(user);
     return user;
 }
@@ -230,7 +233,7 @@ async function addTimeToCalendar(calendar) {
     times.push(calendar["event_times"])
     const updatedCalendar = {
         _id: previousCalendar._id,
-        event_times: times.flat().filter(UNIQUE)
+        event_times: times.flat().filter(UNIQUE_VALUES)
     }
     await DB.updateCalendar(updatedCalendar);
 
@@ -245,7 +248,7 @@ async function updateTime(newTime) {
         events.push(newTime["event_ids"])
         const updatedTime = {
             time: previousTime['time'],
-            event_ids: events.flat().filter(UNIQUE)
+            event_ids: events.flat().filter(UNIQUE_VALUES)
         }
         await DB.updateTime(updatedTime);
         return updatedTime;
@@ -282,6 +285,8 @@ function setAuthCookie(res, authToken) {
     });
 }
 
-app.listen(port, () => {
+const httpService = app.listen(port, () => {
     console.log(`Listening on port ${port}`);
 });
+
+peerProxy(httpService);
